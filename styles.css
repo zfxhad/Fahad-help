@@ -33,7 +33,7 @@ button{font:inherit}
   backdrop-filter:blur(18px);
   border-bottom:1px solid var(--line);
 }
-.brand img{width:150px;height:66px;display:block;object-fit:contain;object-position:left center}
+.brand img{width:58px;height:58px;display:block;object-fit:contain}
 .navlinks{display:flex;gap:28px}
 .navlinks a{font-size:14px;font-weight:650}
 .navlinks a:hover{color:var(--gold)}
@@ -184,7 +184,7 @@ footer{
   background:#081220;color:white;
   display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center
 }
-footer img{width:150px;max-height:74px;object-fit:contain;object-position:left center}
+footer img{width:58px;height:58px;object-fit:contain}
 footer div{display:flex;flex-direction:column}
 footer span{color:rgba(255,255,255,.62);font-size:13px}
 footer small{color:rgba(255,255,255,.55)}
@@ -238,4 +238,21 @@ html[dir="rtl"] .hero-actions,html[dir="rtl"] .contact-actions{direction:rtl}
   .brand img{width:112px;height:58px}
   .tools-section .cards.four{grid-template-columns:1fr}
   footer img{width:130px}
+}
+
+.cv-download{border-color:var(--gold);color:var(--navy)}
+.cv-download:hover{background:rgba(184,148,82,.12)}
+
+.nav-actions{display:flex;align-items:center;gap:10px}
+.header-cv{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:42px;padding:0 16px;border-radius:999px;
+  border:1px solid var(--gold);background:transparent;
+  color:var(--navy);font-size:14px;font-weight:750;
+  transition:.25s ease
+}
+.header-cv:hover{background:rgba(184,148,82,.12);transform:translateY(-1px)}
+@media (max-width:700px){
+  .nav-actions{gap:7px}
+  .header-cv,.lang-toggle{padding:9px 11px;font-size:12px}
 }
