@@ -40,3 +40,11 @@
 - تم استخدام الشعار المرفوع من المستخدم.
 - تم تحديث السيرة الذاتية بالملف المرفوع.
 - تم استبدال رمز علم السعودية بملف SVG محلي لمنع ظهور SA.
+
+
+## Final update
+- Added Achievements section.
+- Added descriptions to all 8 tools.
+- Updated Job Offer Comparison to Company A / Company B with annual comparison.
+- Updated Commute Calculator with Daily / Weekly input.
+- Rounded all four corners of the profile photo.

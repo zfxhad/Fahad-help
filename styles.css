@@ -93,7 +93,7 @@ h1{
   max-height:690px;
   object-fit:cover;
   object-position:center top;
-  border-radius:36px 36px 0 0;
+  border-radius:36px;
   box-shadow:var(--shadow);
 }
 .photo-glow{
@@ -259,3 +259,68 @@ html[dir="rtl"] .hero-actions,html[dir="rtl"] .contact-actions{direction:rtl}
 
 .flag-icon{display:inline-flex;align-items:center;justify-content:center}
 .flag-icon img{width:46px;height:30px;object-fit:cover;border-radius:6px;border:1px solid rgba(0,0,0,.08);display:block}
+
+
+.about-tool{
+  margin:0 0 22px;
+  padding:16px 18px;
+  background:var(--cream);
+  border-inline-start:4px solid var(--gold);
+  border-radius:14px;
+}
+.about-tool strong{display:block;margin-bottom:4px;color:var(--navy)}
+.about-tool p{margin:0;color:var(--muted)}
+
+.tool-form select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:white;
+  font:inherit;
+  color:inherit;
+}
+
+.achievement-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:22px;
+}
+.achievement-card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:28px;
+  box-shadow:0 16px 38px rgba(14,26,43,.06);
+}
+.achievement-heading{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+}
+.achievement-icon{font-size:30px}
+.achievement-heading h3{font-size:26px;color:var(--navy);margin:0}
+.achievement-heading p{color:var(--muted);margin:3px 0 0}
+.achievement-list{list-style:none;padding:0;margin:22px 0 0}
+.achievement-list li{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+}
+.status{
+  flex:0 0 auto;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:11px;
+}
+.status.completed{background:#e3f3e8;color:#28713e}
+.status.progress{background:#fff1c9;color:#896415}
+.status.project{background:#e8edf5;color:#405a79}
+
+@media(max-width:760px){
+  .achievement-grid{grid-template-columns:1fr}
+  .achievement-list li{align-items:flex-start}
+}
