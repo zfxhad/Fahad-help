@@ -48,3 +48,6 @@
 - Updated Job Offer Comparison to Company A / Company B with annual comparison.
 - Updated Commute Calculator with Daily / Weekly input.
 - Rounded all four corners of the profile photo.
+
+- Removed company-name inputs from Job Offer Comparison.
+- Added monthly commute calculations and a Weekly preset for Monday-to-Thursday travel patterns.

@@ -82,10 +82,8 @@ const tools = {
       <h2>Job Offer Comparison</h2>
       <div class="about-tool"><strong>About this tool</strong><p>Compare two job offers using their complete annual value, not only the monthly salary. Add monthly compensation and annual bonus to see the yearly difference.</p></div>
       <form class="tool-form" id="offerForm">
-        <label>Company A name<input name="aName" value="Company A"></label>
         <label>Company A monthly total<input type="number" name="aMonthly" required min="0"></label>
         <label>Company A annual bonus<input type="number" name="aBonus" value="0" min="0"></label>
-        <label>Company B name<input name="bName" value="Company B"></label>
         <label>Company B monthly total<input type="number" name="bMonthly" required min="0"></label>
         <label>Company B annual bonus<input type="number" name="bBonus" value="0" min="0"></label>
         <button class="btn btn-primary">Compare</button>
@@ -95,10 +93,8 @@ const tools = {
       <h2>مقارنة عرضين وظيفيين</h2>
       <div class="about-tool"><strong>عن الأداة</strong><p>قارن عرضين وظيفيين بالقيمة السنوية الكاملة، مو بس الراتب الشهري. أضف الإجمالي الشهري والبونص السنوي وبتشوف الفرق بينهم بالسنة.</p></div>
       <form class="tool-form" id="offerForm">
-        <label>اسم شركة A<input name="aName" value="شركة A"></label>
         <label>إجمالي شركة A الشهري<input type="number" name="aMonthly" required min="0"></label>
         <label>بونص شركة A السنوي<input type="number" name="aBonus" value="0" min="0"></label>
-        <label>اسم شركة B<input name="bName" value="شركة B"></label>
         <label>إجمالي شركة B الشهري<input type="number" name="bMonthly" required min="0"></label>
         <label>بونص شركة B السنوي<input type="number" name="bBonus" value="0" min="0"></label>
         <button class="btn btn-primary">قارن</button>
@@ -108,11 +104,12 @@ const tools = {
   commute: {
     en: `
       <h2>Commute Calculator</h2>
-      <div class="about-tool"><strong>About this tool</strong><p>Estimate how much time and money your commute costs. Choose whether the distance and time you enter are daily or weekly.</p></div>
+      <div class="about-tool"><strong>About this tool</strong><p>Estimate weekly and monthly commute cost and time. For a schedule like travelling on Monday and returning on Thursday, enter the full round-trip distance once and keep the period set to Weekly.</p></div>
       <form class="tool-form" id="commuteForm">
-        <label>Input period<select name="period"><option value="daily">Daily</option><option value="weekly">Weekly</option></select></label>
+        <label>Input period<select name="period"><option value="daily">Daily</option><option value="weekly" selected>Weekly</option><option value="monthly">Monthly</option></select></label>
         <label>Round-trip distance (km)<input type="number" name="distance" required min="0"></label>
         <label>Working days per week<input type="number" name="days" value="5" required min="1" max="7"></label>
+        <label>Weeks per month<input type="number" name="weeks" value="4.33" required min="1" step="0.01"></label>
         <label>Vehicle efficiency (km/L)<input type="number" name="eff" value="12" required min="0.1"></label>
         <label>Fuel price per liter (SAR)<input type="number" name="price" value="2.33" required min="0" step="0.01"></label>
         <label>Round-trip time (minutes)<input type="number" name="minutes" required min="0"></label>
@@ -121,11 +118,12 @@ const tools = {
       <div id="commuteResult"></div>`,
     ar: `
       <h2>حاسبة التنقل</h2>
-      <div class="about-tool"><strong>عن الأداة</strong><p>احسب كم يكلفك مشوار العمل من وقت وفلوس، واختر هل المسافة والوقت اللي تدخلها يومية أو أسبوعية.</p></div>
+      <div class="about-tool"><strong>عن الأداة</strong><p>احسب تكلفة ووقت التنقل أسبوعيًا وشهريًا. إذا تروح الاثنين وترجع الخميس، اكتب مسافة الذهاب والعودة كاملة مرة واحدة واختر أسبوعي.</p></div>
       <form class="tool-form" id="commuteForm">
-        <label>فترة الإدخال<select name="period"><option value="daily">يومي</option><option value="weekly">أسبوعي</option></select></label>
+        <label>فترة الإدخال<select name="period"><option value="daily">يومي</option><option value="weekly" selected>أسبوعي</option><option value="monthly">شهري</option></select></label>
         <label>مسافة الذهاب والعودة (كم)<input type="number" name="distance" required min="0"></label>
         <label>أيام العمل بالأسبوع<input type="number" name="days" value="5" required min="1" max="7"></label>
+        <label>عدد الأسابيع بالشهر<input type="number" name="weeks" value="4.33" required min="1" step="0.01"></label>
         <label>كفاءة السيارة (كم/لتر)<input type="number" name="eff" value="12" required min="0.1"></label>
         <label>سعر لتر الوقود (ريال)<input type="number" name="price" value="2.33" required min="0" step="0.01"></label>
         <label>وقت الذهاب والعودة (دقيقة)<input type="number" name="minutes" required min="0"></label>
@@ -278,8 +276,8 @@ function bindTool(tool) {
     document.getElementById('offerForm').onsubmit = e => {
       e.preventDefault();
       const d = new FormData(e.target);
-      const aName = d.get('aName') || (lang==='ar'?'شركة A':'Company A');
-      const bName = d.get('bName') || (lang==='ar'?'شركة B':'Company B');
+      const aName = lang==='ar' ? 'شركة A' : 'Company A';
+      const bName = lang==='ar' ? 'شركة B' : 'Company B';
       const a = +d.get('aMonthly')*12 + +d.get('aBonus');
       const b = +d.get('bMonthly')*12 + +d.get('bBonus');
       const difference = Math.abs(a-b);
@@ -297,13 +295,41 @@ function bindTool(tool) {
       const d = new FormData(e.target);
       const period = d.get('period');
       const days = +d.get('days');
+      const weeks = +d.get('weeks') || 4.33;
       const enteredDistance = +d.get('distance');
       const enteredMinutes = +d.get('minutes');
-      const weeklyKm = period === 'daily' ? enteredDistance * days : enteredDistance;
-      const weeklyMinutes = period === 'daily' ? enteredMinutes * days : enteredMinutes;
-      const liters = weeklyKm / +d.get('eff');
-      const weeklyCost = liters * +d.get('price');
-      document.getElementById('commuteResult').innerHTML = `<div class="result">${lang==='ar'?'المسافة الأسبوعية':'Weekly distance'}: ${money(weeklyKm)} km<br>${lang==='ar'?'استهلاك الوقود الأسبوعي':'Weekly fuel usage'}: ${money(liters)} L<br>${lang==='ar'?'تكلفة الوقود الأسبوعية':'Weekly fuel cost'}: ${money(weeklyCost)} SAR<br>${lang==='ar'?'الوقت الأسبوعي':'Weekly commute time'}: ${money(weeklyMinutes/60)} h</div>`;
+
+      let weeklyKm, weeklyMinutes, monthlyKm, monthlyMinutes;
+      if (period === 'daily') {
+        weeklyKm = enteredDistance * days;
+        weeklyMinutes = enteredMinutes * days;
+        monthlyKm = weeklyKm * weeks;
+        monthlyMinutes = weeklyMinutes * weeks;
+      } else if (period === 'weekly') {
+        weeklyKm = enteredDistance;
+        weeklyMinutes = enteredMinutes;
+        monthlyKm = weeklyKm * weeks;
+        monthlyMinutes = weeklyMinutes * weeks;
+      } else {
+        monthlyKm = enteredDistance;
+        monthlyMinutes = enteredMinutes;
+        weeklyKm = monthlyKm / weeks;
+        weeklyMinutes = monthlyMinutes / weeks;
+      }
+
+      const weeklyLiters = weeklyKm / +d.get('eff');
+      const monthlyLiters = monthlyKm / +d.get('eff');
+      const weeklyCost = weeklyLiters * +d.get('price');
+      const monthlyCost = monthlyLiters * +d.get('price');
+
+      document.getElementById('commuteResult').innerHTML = `<div class="result">
+        <strong>${lang==='ar'?'التكلفة الشهرية':'Monthly cost'}: ${money(monthlyCost)} SAR</strong><br>
+        ${lang==='ar'?'المسافة الشهرية':'Monthly distance'}: ${money(monthlyKm)} km<br>
+        ${lang==='ar'?'استهلاك الوقود الشهري':'Monthly fuel usage'}: ${money(monthlyLiters)} L<br>
+        ${lang==='ar'?'الوقت الشهري':'Monthly commute time'}: ${money(monthlyMinutes/60)} h<br><br>
+        ${lang==='ar'?'التكلفة الأسبوعية':'Weekly cost'}: ${money(weeklyCost)} SAR<br>
+        ${lang==='ar'?'المسافة الأسبوعية':'Weekly distance'}: ${money(weeklyKm)} km
+      </div>`;
     }
   }
   if (tool === 'gosi') {
