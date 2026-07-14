@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" role="img" aria-label="F3 logo">
-  <rect width="220" height="180" fill="none"/>
-  <g fill="#0E1A2B">
-    <rect x="34" y="24" width="112" height="22" rx="0"/>
-    <rect x="34" y="24" width="24" height="118" rx="0"/>
-    <rect x="34" y="71" width="84" height="22" rx="0"/>
-  </g>
-  <rect x="154" y="116" width="26" height="26" rx="0" fill="#B9924A"/>
-</svg>
