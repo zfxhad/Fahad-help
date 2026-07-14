@@ -1,344 +1,241 @@
 
-const langToggle = document.getElementById('langToggle');
-let lang = 'en';
-
-function applyLang() {
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = el.dataset[lang];
-  });
-  langToggle.textContent = lang === 'en' ? 'العربية' : 'English';
+:root{
+  --cream:#F6F1E8;
+  --cream-2:#EEE6D8;
+  --white:#FFFDF9;
+  --navy:#0E1A2B;
+  --navy-2:#192A44;
+  --gold:#B89452;
+  --gold-soft:#D5BF94;
+  --text:#1E2630;
+  --muted:#66707A;
+  --line:rgba(14,26,43,.12);
+  --radius:22px;
+  --shadow:0 18px 55px rgba(14,26,43,.10);
 }
-langToggle.addEventListener('click', () => {
-  lang = lang === 'en' ? 'ar' : 'en';
-  applyLang();
-});
-
-document.getElementById('year').textContent = new Date().getFullYear();
-
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
-  });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-const dialog = document.getElementById('toolDialog');
-const toolContent = document.getElementById('toolContent');
-document.querySelector('.close-dialog').addEventListener('click', () => dialog.close());
-
-function money(v) {
-  return new Intl.NumberFormat(lang === 'ar' ? 'ar-SA' : 'en-SA', {
-    maximumFractionDigits: 2
-  }).format(Number(v || 0));
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--text);
+  background:var(--cream);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.6;
 }
-
-const tools = {
-  raise: {
-    en: `
-      <h2>Salary Raise Calculator</h2>
-      <form class="tool-form" id="raiseForm">
-        <label>Current monthly salary<input type="number" name="current" required min="0"></label>
-        <label>New monthly salary<input type="number" name="next" required min="0"></label>
-        <button class="btn btn-primary">Calculate</button>
-      </form>
-      <div id="raiseResult"></div>`,
-    ar: `
-      <h2>حاسبة الزيادة</h2>
-      <form class="tool-form" id="raiseForm">
-        <label>الراتب الشهري الحالي<input type="number" name="current" required min="0"></label>
-        <label>الراتب الشهري الجديد<input type="number" name="next" required min="0"></label>
-        <button class="btn btn-primary">احسب</button>
-      </form>
-      <div id="raiseResult"></div>`
-  },
-  oee: {
-    en: `
-      <h2>OEE Calculator</h2>
-      <form class="tool-form" id="oeeForm">
-        <label>Availability %<input type="number" name="a" required min="0" max="100" step="0.01"></label>
-        <label>Performance %<input type="number" name="p" required min="0" max="100" step="0.01"></label>
-        <label>Quality %<input type="number" name="q" required min="0" max="100" step="0.01"></label>
-        <button class="btn btn-primary">Calculate OEE</button>
-      </form>
-      <div id="oeeResult"></div>`,
-    ar: `
-      <h2>حاسبة OEE</h2>
-      <form class="tool-form" id="oeeForm">
-        <label>التوافر %<input type="number" name="a" required min="0" max="100" step="0.01"></label>
-        <label>الأداء %<input type="number" name="p" required min="0" max="100" step="0.01"></label>
-        <label>الجودة %<input type="number" name="q" required min="0" max="100" step="0.01"></label>
-        <button class="btn btn-primary">احسب OEE</button>
-      </form>
-      <div id="oeeResult"></div>`
-  },
-  offer: {
-    en: `
-      <h2>Job Offer Comparison</h2>
-      <form class="tool-form" id="offerForm">
-        <label>Offer A monthly total<input type="number" name="aMonthly" required min="0"></label>
-        <label>Offer A annual bonus<input type="number" name="aBonus" value="0" min="0"></label>
-        <label>Offer B monthly total<input type="number" name="bMonthly" required min="0"></label>
-        <label>Offer B annual bonus<input type="number" name="bBonus" value="0" min="0"></label>
-        <button class="btn btn-primary">Compare</button>
-      </form>
-      <div id="offerResult"></div>`,
-    ar: `
-      <h2>مقارنة عرضين وظيفيين</h2>
-      <form class="tool-form" id="offerForm">
-        <label>إجمالي عرض A الشهري<input type="number" name="aMonthly" required min="0"></label>
-        <label>بونص عرض A السنوي<input type="number" name="aBonus" value="0" min="0"></label>
-        <label>إجمالي عرض B الشهري<input type="number" name="bMonthly" required min="0"></label>
-        <label>بونص عرض B السنوي<input type="number" name="bBonus" value="0" min="0"></label>
-        <button class="btn btn-primary">قارن</button>
-      </form>
-      <div id="offerResult"></div>`
-  },
-  commute: {
-    en: `
-      <h2>Commute Calculator</h2>
-      <form class="tool-form" id="commuteForm">
-        <label>Round-trip distance per day (km)<input type="number" name="distance" required min="0"></label>
-        <label>Working days per month<input type="number" name="days" value="22" required min="1"></label>
-        <label>Vehicle efficiency (km/L)<input type="number" name="eff" value="12" required min="0.1"></label>
-        <label>Fuel price per liter (SAR)<input type="number" name="price" value="2.33" required min="0" step="0.01"></label>
-        <label>Round-trip time per day (minutes)<input type="number" name="minutes" required min="0"></label>
-        <button class="btn btn-primary">Calculate</button>
-      </form>
-      <div id="commuteResult"></div>`,
-    ar: `
-      <h2>حاسبة التنقل</h2>
-      <form class="tool-form" id="commuteForm">
-        <label>مسافة الذهاب والعودة يوميًا (كم)<input type="number" name="distance" required min="0"></label>
-        <label>أيام العمل شهريًا<input type="number" name="days" value="22" required min="1"></label>
-        <label>كفاءة السيارة (كم/لتر)<input type="number" name="eff" value="12" required min="0.1"></label>
-        <label>سعر لتر الوقود (ريال)<input type="number" name="price" value="2.33" required min="0" step="0.01"></label>
-        <label>وقت الذهاب والعودة يوميًا (دقيقة)<input type="number" name="minutes" required min="0"></label>
-        <button class="btn btn-primary">احسب</button>
-      </form>
-      <div id="commuteResult"></div>`
-  },
-  gosi: {
-    en: `
-      <h2>GOSI Deduction Calculator</h2>
-      <form class="tool-form" id="gosiForm">
-        <label>Basic salary<input type="number" name="basic" required min="0"></label>
-        <label>Housing allowance<input type="number" name="housing" value="0" min="0"></label>
-        <label>Salary month<input type="month" name="month" value="2026-07" required></label>
-        <label>Any GOSI or civil pension contribution before 3 July 2024?
-          <select name="prior" required>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-        </label>
-        <button class="btn btn-primary">Calculate Deduction</button>
-      </form>
-      <div id="gosiResult"></div>`,
-    ar: `
-      <h2>حاسبة خصم التأمينات</h2>
-      <form class="tool-form" id="gosiForm">
-        <label>الراتب الأساسي<input type="number" name="basic" required min="0"></label>
-        <label>بدل السكن<input type="number" name="housing" value="0" min="0"></label>
-        <label>شهر الراتب<input type="month" name="month" value="2026-07" required></label>
-        <label>هل عندك أي مدة اشتراك بالتأمينات أو التقاعد المدني قبل 3 يوليو 2024؟
-          <select name="prior" required>
-            <option value="yes">نعم</option>
-            <option value="no">لا</option>
-          </select>
-        </label>
-        <button class="btn btn-primary">احسب الخصم</button>
-      </form>
-      <div id="gosiResult"></div>`
-  },
-  root: {
-    en: `
-      <h2>Root Cause Helper</h2>
-      <form class="tool-form" id="rootForm">
-        <label>Problem statement<textarea name="problem" required rows="3"></textarea></label>
-        <label>Why 1<textarea name="w1" rows="2"></textarea></label>
-        <label>Why 2<textarea name="w2" rows="2"></textarea></label>
-        <label>Why 3<textarea name="w3" rows="2"></textarea></label>
-        <label>Why 4<textarea name="w4" rows="2"></textarea></label>
-        <label>Why 5<textarea name="w5" rows="2"></textarea></label>
-        <label>Next action<textarea name="action" rows="3"></textarea></label>
-        <button class="btn btn-primary">Generate Summary</button>
-      </form>
-      <div id="rootResult"></div>`,
-    ar: `
-      <h2>مساعد تحليل السبب الجذري</h2>
-      <form class="tool-form" id="rootForm">
-        <label>وصف المشكلة<textarea name="problem" required rows="3"></textarea></label>
-        <label>لماذا 1<textarea name="w1" rows="2"></textarea></label>
-        <label>لماذا 2<textarea name="w2" rows="2"></textarea></label>
-        <label>لماذا 3<textarea name="w3" rows="2"></textarea></label>
-        <label>لماذا 4<textarea name="w4" rows="2"></textarea></label>
-        <label>لماذا 5<textarea name="w5" rows="2"></textarea></label>
-        <label>الإجراء التالي<textarea name="action" rows="3"></textarea></label>
-        <button class="btn btn-primary">أنشئ الملخص</button>
-      </form>
-      <div id="rootResult"></div>`
-  },
-  shift: {
-    en: `
-      <h2>Shift Handover Generator</h2>
-      <form class="tool-form" id="shiftForm">
-        <label>Shift / Date<input name="shift" required></label>
-        <label>Production summary<textarea name="production" rows="3"></textarea></label>
-        <label>Downtime / Issues<textarea name="issues" rows="3"></textarea></label>
-        <label>Open actions<textarea name="actions" rows="3"></textarea></label>
-        <button class="btn btn-primary">Generate Handover</button>
-      </form>
-      <div id="shiftResult"></div>`,
-    ar: `
-      <h2>مولد تسليم الشفت</h2>
-      <form class="tool-form" id="shiftForm">
-        <label>الشفت / التاريخ<input name="shift" required></label>
-        <label>ملخص الإنتاج<textarea name="production" rows="3"></textarea></label>
-        <label>التوقفات / المشكلات<textarea name="issues" rows="3"></textarea></label>
-        <label>الإجراءات المفتوحة<textarea name="actions" rows="3"></textarea></label>
-        <button class="btn btn-primary">أنشئ التقرير</button>
-      </form>
-      <div id="shiftResult"></div>`
-  },
-  kpi: {
-    en: `
-      <h2>KPI Dashboard</h2>
-      <form class="tool-form" id="kpiForm">
-        <label>Target production<input type="number" name="target" required min="0"></label>
-        <label>Actual production<input type="number" name="actual" required min="0"></label>
-        <label>Total units<input type="number" name="total" required min="0"></label>
-        <label>Rejected units<input type="number" name="rejects" value="0" min="0"></label>
-        <label>Planned operating minutes<input type="number" name="planned" required min="0"></label>
-        <label>Downtime minutes<input type="number" name="down" value="0" min="0"></label>
-        <button class="btn btn-primary">Calculate KPIs</button>
-      </form>
-      <div id="kpiResult"></div>`,
-    ar: `
-      <h2>لوحة مؤشرات الأداء</h2>
-      <form class="tool-form" id="kpiForm">
-        <label>الإنتاج المستهدف<input type="number" name="target" required min="0"></label>
-        <label>الإنتاج الفعلي<input type="number" name="actual" required min="0"></label>
-        <label>إجمالي الوحدات<input type="number" name="total" required min="0"></label>
-        <label>الوحدات المرفوضة<input type="number" name="rejects" value="0" min="0"></label>
-        <label>دقائق التشغيل المخططة<input type="number" name="planned" required min="0"></label>
-        <label>دقائق التوقف<input type="number" name="down" value="0" min="0"></label>
-        <button class="btn btn-primary">احسب المؤشرات</button>
-      </form>
-      <div id="kpiResult"></div>`
-  }
-};
-
-function bindTool(tool) {
-  if (tool === 'raise') {
-    document.getElementById('raiseForm').onsubmit = e => {
-      e.preventDefault();
-      const d = new FormData(e.target);
-      const current = +d.get('current'), next = +d.get('next');
-      const diff = next - current;
-      const pct = current ? diff / current * 100 : 0;
-      document.getElementById('raiseResult').innerHTML =
-        `<div class="result"><strong>${lang==='ar'?'نسبة الزيادة':'Increase'}: ${money(pct)}%</strong><br>${lang==='ar'?'الفرق الشهري':'Monthly difference'}: ${money(diff)} SAR<br>${lang==='ar'?'الفرق السنوي':'Annual difference'}: ${money(diff*12)} SAR</div>`;
-    }
-  }
-  if (tool === 'oee') {
-    document.getElementById('oeeForm').onsubmit = e => {
-      e.preventDefault();
-      const d = new FormData(e.target);
-      const oee = (+d.get('a')/100)*(+d.get('p')/100)*(+d.get('q')/100)*100;
-      const status = oee >= 85 ? (lang==='ar'?'ممتاز':'Excellent') : oee >= 65 ? (lang==='ar'?'يحتاج تحسين':'Needs improvement') : (lang==='ar'?'منخفض':'Low');
-      document.getElementById('oeeResult').innerHTML = `<div class="result"><strong>OEE: ${money(oee)}%</strong><br>${status}</div>`;
-    }
-  }
-  if (tool === 'offer') {
-    document.getElementById('offerForm').onsubmit = e => {
-      e.preventDefault();
-      const d = new FormData(e.target);
-      const a = +d.get('aMonthly')*12 + +d.get('aBonus');
-      const b = +d.get('bMonthly')*12 + +d.get('bBonus');
-      const best = a === b ? (lang==='ar'?'العرضان متساويان':'Both offers are equal') : a > b ? 'A' : 'B';
-      document.getElementById('offerResult').innerHTML = `<div class="result">A: ${money(a)} SAR<br>B: ${money(b)} SAR<br><strong>${lang==='ar'?'الأفضل':'Better offer'}: ${best}</strong></div>`;
-    }
-  }
-  if (tool === 'commute') {
-    document.getElementById('commuteForm').onsubmit = e => {
-      e.preventDefault();
-      const d = new FormData(e.target);
-      const km = +d.get('distance') * +d.get('days');
-      const liters = km / +d.get('eff');
-      const cost = liters * +d.get('price');
-      const hours = (+d.get('minutes') * +d.get('days')) / 60;
-      document.getElementById('commuteResult').innerHTML = `<div class="result">${lang==='ar'?'المسافة الشهرية':'Monthly distance'}: ${money(km)} km<br>${lang==='ar'?'تكلفة الوقود الشهرية':'Monthly fuel cost'}: ${money(cost)} SAR<br>${lang==='ar'?'الوقت الشهري':'Monthly commute time'}: ${money(hours)} h<br>${lang==='ar'?'التكلفة السنوية':'Annual cost'}: ${money(cost*12)} SAR</div>`;
-    }
-  }
-  if (tool === 'gosi') {
-    document.getElementById('gosiForm').onsubmit = e => {
-      e.preventDefault();
-      const d = new FormData(e.target);
-      const wage = Math.min((+d.get('basic') || 0) + (+d.get('housing') || 0), 45000);
-      const month = String(d.get('month'));
-      const prior = d.get('prior');
-      let pension = 9;
-      let system = lang === 'ar' ? 'النظام الحالي' : 'Current system';
-
-      if (prior === 'no') {
-        system = lang === 'ar' ? 'نظام التأمينات الجديد' : 'New Social Insurance Law';
-        if (month >= '2028-07') pension = 11;
-        else if (month >= '2027-07') pension = 10.5;
-        else if (month >= '2026-07') pension = 10;
-        else if (month >= '2025-07') pension = 9.5;
-        else pension = 9;
-      }
-
-      const saned = 0.75;
-      const pensionAmount = wage * pension / 100;
-      const sanedAmount = wage * saned / 100;
-      const total = pensionAmount + sanedAmount;
-
-      document.getElementById('gosiResult').innerHTML = `<div class="result">
-        <strong>${lang==='ar'?'إجمالي الخصم الشهري':'Total monthly deduction'}: ${money(total)} SAR</strong><br>
-        ${lang==='ar'?'النظام المطبق':'Applicable system'}: ${system}<br>
-        ${lang==='ar'?'الأجر الخاضع للاشتراك':'Contributory wage'}: ${money(wage)} SAR<br>
-        ${lang==='ar'?'نسبة المعاشات':'Pension rate'}: ${money(pension)}%<br>
-        ${lang==='ar'?'خصم المعاشات':'Pension deduction'}: ${money(pensionAmount)} SAR<br>
-        ${lang==='ar'?'نسبة ساند':'SANED rate'}: 0.75%<br>
-        ${lang==='ar'?'خصم ساند':'SANED deduction'}: ${money(sanedAmount)} SAR
-      </div>`;
-    }
-  }
-  if (tool === 'root') {
-    document.getElementById('rootForm').onsubmit = e => {
-      e.preventDefault();
-      const d = new FormData(e.target);
-      const whys = ['w1','w2','w3','w4','w5'].map(k => d.get(k)).filter(Boolean);
-      document.getElementById('rootResult').innerHTML = `<div class="result"><strong>${lang==='ar'?'المشكلة':'Problem'}:</strong> ${d.get('problem')}<br><br><strong>5 Whys:</strong><ol>${whys.map(x=>`<li>${x}</li>`).join('')}</ol><strong>${lang==='ar'?'الإجراء':'Action'}:</strong> ${d.get('action')||'-'}</div>`;
-    }
-  }
-  if (tool === 'shift') {
-    document.getElementById('shiftForm').onsubmit = e => {
-      e.preventDefault();
-      const d = new FormData(e.target);
-      document.getElementById('shiftResult').innerHTML = `<div class="result"><strong>${d.get('shift')}</strong><br><br><strong>${lang==='ar'?'الإنتاج':'Production'}:</strong><br>${d.get('production')||'-'}<br><br><strong>${lang==='ar'?'المشكلات':'Issues'}:</strong><br>${d.get('issues')||'-'}<br><br><strong>${lang==='ar'?'الإجراءات':'Actions'}:</strong><br>${d.get('actions')||'-'}</div>`;
-    }
-  }
-  if (tool === 'kpi') {
-    document.getElementById('kpiForm').onsubmit = e => {
-      e.preventDefault();
-      const d = new FormData(e.target);
-      const target = +d.get('target'), actual=+d.get('actual'), total=+d.get('total'), rejects=+d.get('rejects'), planned=+d.get('planned'), down=+d.get('down');
-      const achievement = target ? actual/target*100 : 0;
-      const quality = total ? (total-rejects)/total*100 : 0;
-      const availability = planned ? (planned-down)/planned*100 : 0;
-      document.getElementById('kpiResult').innerHTML = `<div class="result">${lang==='ar'?'تحقيق الهدف':'Target achievement'}: ${money(achievement)}%<br>${lang==='ar'?'الجودة':'Quality'}: ${money(quality)}%<br>${lang==='ar'?'التوافر':'Availability'}: ${money(availability)}%</div>`;
-    }
-  }
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+.navbar{
+  position:sticky;top:0;z-index:50;
+  height:78px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 6vw;
+  background:rgba(246,241,232,.85);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+}
+.brand img{width:150px;height:66px;display:block;object-fit:contain;object-position:left center}
+.navlinks{display:flex;gap:28px}
+.navlinks a{font-size:14px;font-weight:650}
+.navlinks a:hover{color:var(--gold)}
+.lang-toggle{
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--white);
+  padding:10px 16px;
+  cursor:pointer;
+}
+.section{padding:110px 7vw}
+.hero{
+  min-height:calc(100vh - 78px);
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  align-items:center;
+  gap:6vw;
+  overflow:hidden;
+}
+.eyebrow{
+  color:var(--gold);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  font-size:12px;
+  font-weight:800;
+}
+h1,h2,h3,h4,p{margin-top:0}
+h1{
+  margin:.25em 0 .1em;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(56px,8vw,118px);
+  line-height:.92;
+  letter-spacing:-.05em;
+  color:var(--navy);
+}
+.role{font-size:clamp(24px,3vw,38px);font-weight:700;margin-bottom:8px}
+.tagline{font-size:clamp(18px,2vw,28px);color:var(--gold);font-family:Georgia,serif}
+.hero-actions,.contact-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:50px;
+  padding:0 22px;
+  border-radius:999px;
+  font-weight:750;
+  border:1px solid transparent;
+  transition:.25s ease;
+}
+.btn-primary{background:var(--navy);color:white}
+.btn-primary:hover{transform:translateY(-2px);background:var(--navy-2)}
+.btn-secondary{background:transparent;border-color:var(--navy);color:var(--navy)}
+.btn-secondary:hover{background:var(--white);transform:translateY(-2px)}
+.scroll-link{display:inline-block;margin-top:40px;color:var(--muted);font-size:14px}
+.hero-photo{position:relative;min-height:620px;display:flex;align-items:flex-end;justify-content:center}
+.hero-photo img{
+  position:relative;z-index:2;
+  width:min(520px,100%);
+  max-height:690px;
+  object-fit:cover;
+  object-position:center top;
+  border-radius:36px 36px 0 0;
+  box-shadow:var(--shadow);
+}
+.photo-glow{
+  position:absolute;
+  width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(circle,rgba(184,148,82,.28),rgba(184,148,82,0) 67%);
+}
+.alt{background:var(--white)}
+.section-title{max-width:760px;margin-bottom:48px}
+.section-title h2{
+  margin:.18em 0;
+  font-family:Georgia,serif;
+  color:var(--navy);
+  font-size:clamp(40px,5vw,72px);
+  letter-spacing:-.035em;
+  line-height:1.05;
+}
+.section-title p{color:var(--muted);font-size:18px}
+.about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:70px;align-items:start}
+.about-copy{font-size:20px}
+.closing{color:var(--gold);font-family:Georgia,serif;font-size:28px}
+.highlights{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.stat{
+  min-height:150px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--cream);
+  padding:26px;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.stat strong{font-size:42px;color:var(--navy);line-height:1}
+.stat span{margin-top:10px;color:var(--muted);font-size:14px}
+.tools-section{background:linear-gradient(180deg,var(--cream),var(--cream-2))}
+.tool-group{
+  margin-top:52px;
+  padding:34px;
+  background:rgba(255,253,249,.72);
+  border:1px solid rgba(184,148,82,.24);
+  border-radius:30px;
+  box-shadow:0 20px 50px rgba(14,26,43,.06);
+}
+.group-heading{display:flex;gap:16px;align-items:flex-start;margin-bottom:26px}
+.group-icon{font-size:30px}
+.group-heading h3{font-size:28px;margin-bottom:4px;color:var(--navy)}
+.group-heading p{color:var(--muted);margin:0}
+.cards{display:grid;gap:18px}
+.cards.three{grid-template-columns:repeat(3,1fr)}
+.cards.four{grid-template-columns:repeat(4,1fr)}
+.tool-card,.article-card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px;
+  transition:.25s ease;
+}
+.tool-card:hover,.article-card:hover{transform:translateY(-5px);border-color:rgba(184,148,82,.45);box-shadow:var(--shadow)}
+.icon{font-size:28px}
+.tool-card h4{font-size:20px;color:var(--navy);margin:14px 0 8px}
+.tool-card p,.article-card p{color:var(--muted);font-size:15px}
+.open-tool{
+  border:0;background:none;color:var(--gold);
+  padding:0;font-weight:800;cursor:pointer
+}
+.article-no{color:var(--gold);font-weight:800}
+.article-card h3{margin:12px 0 8px;font-size:24px;color:var(--navy)}
+.roadmap{background:var(--navy);color:white}
+.roadmap .section-title h2{color:white}
+.roadmap-list{display:flex;flex-wrap:wrap;gap:12px}
+.roadmap-list span{
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;padding:13px 18px;
+  background:rgba(255,255,255,.06)
+}
+.contact-section{background:var(--cream-2)}
+.contact-card{
+  background:var(--white);
+  border:1px solid rgba(184,148,82,.28);
+  border-radius:34px;
+  padding:clamp(34px,6vw,76px);
+  text-align:center;
+  box-shadow:var(--shadow)
+}
+.contact-card h2{font-family:Georgia,serif;color:var(--navy);font-size:clamp(42px,6vw,78px);margin:.15em 0}
+.contact-card p{color:var(--muted);font-size:18px}
+.contact-actions{justify-content:center}
+footer{
+  padding:34px 7vw;
+  background:#081220;color:white;
+  display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center
+}
+footer img{width:150px;max-height:74px;object-fit:contain;object-position:left center}
+footer div{display:flex;flex-direction:column}
+footer span{color:rgba(255,255,255,.62);font-size:13px}
+footer small{color:rgba(255,255,255,.55)}
+dialog{
+  width:min(720px,92vw);
+  border:0;border-radius:28px;
+  padding:30px;
+  color:var(--text);
+  box-shadow:0 30px 100px rgba(0,0,0,.3)
+}
+dialog::backdrop{background:rgba(8,18,32,.7);backdrop-filter:blur(4px)}
+.close-dialog{position:absolute;right:18px;top:12px;border:0;background:none;font-size:32px;cursor:pointer}
+.tool-form{display:grid;gap:14px}
+.tool-form label{font-weight:700}
+.tool-form input,.tool-form textarea{
+  width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);font:inherit
+}
+.tool-form button{margin-top:8px}
+.result{
+  margin-top:18px;padding:18px;border-radius:16px;
+  background:var(--cream);border:1px solid rgba(184,148,82,.25)
+}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+html[dir="rtl"] body{text-align:right}
+html[dir="rtl"] .navlinks{direction:rtl}
+html[dir="rtl"] .hero-actions,html[dir="rtl"] .contact-actions{direction:rtl}
+@media (max-width:980px){
+  .hero,.about-grid{grid-template-columns:1fr}
+  .hero{padding-top:70px}
+  .hero-photo{min-height:500px}
+  .cards.four{grid-template-columns:repeat(2,1fr)}
+  .highlights{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .navbar{padding:0 20px}
+  .navlinks{display:none}
+  .section{padding:76px 22px}
+  .hero{min-height:auto}
+  .hero-photo{min-height:420px}
+  .cards.three,.cards.four,.highlights{grid-template-columns:1fr}
+  .tool-group{padding:20px}
+  footer{grid-template-columns:1fr;text-align:center;justify-items:center}
 }
 
-document.querySelectorAll('.open-tool').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const tool = btn.dataset.tool;
-    toolContent.innerHTML = tools[tool][lang];
-    dialog.showModal();
-    bindTool(tool);
-  });
-});
+.article-card p{min-height:78px;line-height:1.75}
+@media (max-width:980px){
+  .tools-section .cards.four{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .brand img{width:112px;height:58px}
+  .tools-section .cards.four{grid-template-columns:1fr}
+  footer img{width:130px}
+}
